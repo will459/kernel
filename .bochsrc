@@ -1,4 +1,4 @@
 config_interface: wx
 display_library: wx
-floppya: 1_44=boot_sect.bin, status=inserted
+floppya: 1_44=os-image, status=inserted
 boot: a
