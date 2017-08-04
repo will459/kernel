@@ -17,12 +17,12 @@ call switch_to_pm ;Never return from here
 jmp $
 
 ;Include my created functions
-%include "print/print_string.asm"
-%include "print/print_hex.asm"
-%include "disk/disk_load.asm"
-%include "pm/print_string_pm.asm"
-%include "pm/switch_to_pm.asm"
-%include "pm/gdt.asm"
+%include "boot/print/print_string.asm"
+%include "boot/print/print_hex.asm"
+%include "boot/disk/disk_load.asm"
+%include "boot/pm/print_string_pm.asm"
+%include "boot/pm/switch_to_pm.asm"
+%include "boot/pm/gdt.asm"
 
 [bits 16]
 load_kernel:
@@ -55,7 +55,7 @@ MSG_PROT_MODE:
   db "Successfully started 32-bit protected mode",0
 MSG_LOAD_KERNEL:
   db "Loading kernel into memory",0
-  
+
 ;Closing section
 times 510-($-$$) db 0 ;Pad up to byte 510 with 0's
 dw 0xaa55
