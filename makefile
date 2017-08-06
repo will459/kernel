@@ -28,7 +28,7 @@ kernel.bin : kernel/kernel.c boot/kernel_entry.asm ${OBJ}
 	gcc -m32 -O0 -ffreestanding -c $< -o $@
 
 softclean:
-	rm *.bin *.o
+	rm *.bin *.o */*.o
 
-clean:
-	rm *.bin *.o os-image
+clean: softclean
+	rm os-image
