@@ -1,10 +1,10 @@
 #include "screen.h"
 
-char* video_memory = (char*) VIDEOMEMHEAD;
-
-int clearscreen() {
+void clearscreen() {
   //0xB8000 + 2 * (row * 80 + col)
   //Max is 80x25
+
+  char* video_memory = (char*) VIDEOMEMHEAD;
 
   int max = VIDEOMEMHEAD + 2 * (80 * 25);
   for(int i = 0; i < max; i++)
@@ -12,7 +12,7 @@ int clearscreen() {
     *video_memory = BLANK;
     video_memory = video_memory + 2;
   }
-  video_memory = (char*) VIDEOMEMHEAD;
+  set_cursor(get_screen_offset(0, 0)); //Reset the cursor to top left
 }
 
 int get_screen_offset(int row, int col) {
@@ -71,4 +71,15 @@ void writechar(char c, int col, int row, char attribute) {
   offset = handle_scrolling(offset);
 
   set_cursor(offset);
+}
+
+void print_at(char* string, int col, int row) {
+  if (col >= 0 && row >= 0) {
+    set_cursor(get_screen_offset(col, row)); //Update cursor
+  }
+  int i = 0;
+  while(*(string + i) != 0) { //Not end of string
+    writechar(*(string + i), col, row, WHITE_ON_BLACK);
+    i = i + 1;
+  }
 }

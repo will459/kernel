@@ -16,5 +16,7 @@
 
 //Functions
 void writechar(char c, int col, int row, char attribute);
+void print_at(char* string, int col, int row);
+void clearscreen();
 
 #endif
