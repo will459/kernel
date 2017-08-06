@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include "../kernel/low_level.h"
+#include "../kernel/util.h"
 //Defines
 #define VIDEOMEMHEAD 0xb8000
 #define ROWS 25
@@ -17,6 +18,7 @@
 //Functions
 void writechar(char c, int col, int row, char attribute);
 void print_at(char* string, int col, int row);
+void print(char* string);
 void clearscreen();
 
 #endif

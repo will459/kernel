@@ -1,20 +1,5 @@
 #include "screen.h"
 
-void clearscreen() {
-  //0xB8000 + 2 * (row * 80 + col)
-  //Max is 80x25
-
-  char* video_memory = (char*) VIDEOMEMHEAD;
-
-  int max = VIDEOMEMHEAD + 2 * (80 * 25);
-  for(int i = 0; i < max; i++)
-  {
-    *video_memory = BLANK;
-    video_memory = video_memory + 2;
-  }
-  set_cursor(get_screen_offset(0, 0)); //Reset the cursor to top left
-}
-
 int get_screen_offset(int row, int col) {
   int screen_offset;
   screen_offset = ((row * COLUMNS) + col) * 2;
@@ -33,14 +18,45 @@ int get_cursor() {
 void set_cursor(int offset) {
   offset = offset / 2;
 
+  port_byte_out(REG_SCREEN_CTRL, 15); //0x3d4
+  port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset&0xFF)); //0x3d5
   port_byte_out(REG_SCREEN_CTRL, 14);
-  port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset >> 8));
-  port_byte_out(REG_SCREEN_CTRL, 15);
+  port_byte_out(REG_SCREEN_DATA, (unsigned char) ((offset>>8)&0xFF));
 }
 
-//TODO: Handle scrolling
 int handle_scrolling(int offset) {
+  if(offset < ROWS * COLUMNS * 2) { //If it hasn't fallen off the end
+    return offset;
+  }
+
+  //Else, move rows down one
+  for(int i = 1; i < ROWS; i = i + 1) {
+    memcpy((char *)get_screen_offset(0, i) + VIDEOMEMHEAD, (char *)get_screen_offset(0, i - 1) + VIDEOMEMHEAD, COLUMNS * 2);
+  }
+  //Erase contents of last line
+  char* last_line = (char *)get_screen_offset(0, ROWS - 1) + VIDEOMEMHEAD;
+  for(int i = 0; i < COLUMNS*2; i = i + 1) {
+    *(last_line + 1) = BLANK;
+  }
+
+  offset = offset - 2*COLUMNS; //Move cursor to last line (off end at the moment)
+
   return offset;
+}
+
+void clearscreen() {
+  //0xB8000 + 2 * (row * 80 + col)
+  //Max is 80x25
+
+  char* video_memory = (char*) VIDEOMEMHEAD;
+
+  int max = VIDEOMEMHEAD + 2 * (80 * 25);
+  for(int i = 0; i < max; i++)
+  {
+    *video_memory = BLANK;
+    video_memory = video_memory + 2;
+  }
+  set_cursor(get_screen_offset(0, 0)); //Reset the cursor to top left
 }
 
 void writechar(char c, int col, int row, char attribute) {
@@ -58,7 +74,7 @@ void writechar(char c, int col, int row, char attribute) {
   } else {
     offset = get_cursor();
   }
-  if(c == 'n') {
+  if(c == '\n') {
     int rows = offset / (2*COLUMNS);
     offset = get_screen_offset(79, rows); //End of column, i.e. behave like newline
   } else {
@@ -79,7 +95,14 @@ void print_at(char* string, int col, int row) {
   }
   int i = 0;
   while(*(string + i) != 0) { //Not end of string
-    writechar(*(string + i), col, row, WHITE_ON_BLACK);
+    //Note we use -1 for row and column.  This makes the writechar use the cursor
+    writechar(*(string + i), -1, -1, WHITE_ON_BLACK);
     i = i + 1;
+  }
+}
+
+void print(char* string) {
+  for(int i = 0; *(string + i) != 0; i = i + 1) {
+    writechar(*(string + i), -1, -1, WHITE_ON_BLACK);
   }
 }
