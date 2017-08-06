@@ -1,12 +1,7 @@
 #include "kernel.h"
 
-#include "screen.h"
+#include "../drivers/screen.h"
 
 void _start() {
-
-  clearscreen();
-  writechar('X');
-  writechar('X');
-  backspace();
-  writechar('Y');
+  writechar('X', 5, 5, WHITE_ON_BLACK);
 }
