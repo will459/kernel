@@ -76,7 +76,7 @@ void writechar(char c, int col, int row, char attribute) {
   }
   if(c == '\n') {
     int rows = offset / (2*COLUMNS);
-    offset = get_screen_offset(79, rows); //End of column, i.e. behave like newline
+    offset = get_screen_offset(rows, 79); //End of column, i.e. behave like newline
   } else {
     *(vidmem + offset) = c; //Lower half is the char
     *(vidmem + offset + 1) = attribute; //Upper half is the attribute
