@@ -31,12 +31,12 @@ int handle_scrolling(int offset) {
 
   //Else, move rows down one
   for(int i = 1; i < ROWS; i = i + 1) {
-    memcpy((char *)get_screen_offset(0, i) + VIDEOMEMHEAD, (char *)get_screen_offset(0, i - 1) + VIDEOMEMHEAD, COLUMNS * 2);
+    memcpy((char *)get_screen_offset(i, 0) + VIDEOMEMHEAD, (char *)get_screen_offset(i - 1, 0) + VIDEOMEMHEAD, COLUMNS * 2);
   }
   //Erase contents of last line
-  char* last_line = (char *)get_screen_offset(0, ROWS - 1) + VIDEOMEMHEAD;
+  char* last_line = (char *)get_screen_offset(ROWS - 1, 0) + VIDEOMEMHEAD;
   for(int i = 0; i < COLUMNS*2; i = i + 1) {
-    *(last_line + 1) = BLANK;
+    *(last_line + i) = BLANK;
   }
 
   offset = offset - 2*COLUMNS; //Move cursor to last line (off end at the moment)
