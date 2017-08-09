@@ -5,6 +5,7 @@ switch_to_pm:
 cli       ;Turn off interrupts until we set-up protected mode
 
 lgdt [gdt_descriptor] ;Load our global descriptor defining protected mode segments
+lidt [idt_descriptor]
 
 mov eax, cr0 ;Copy value of cr0
 or eax, 0x1 ;Set the last bit to 1

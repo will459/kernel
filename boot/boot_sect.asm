@@ -23,6 +23,7 @@ jmp $
 %include "boot/pm/print_string_pm.asm"
 %include "boot/pm/switch_to_pm.asm"
 %include "boot/pm/gdt.asm"
+%include "boot/pm/idt.asm"
 
 [bits 16]
 load_kernel:
